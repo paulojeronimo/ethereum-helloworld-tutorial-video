@@ -1,0 +1,131 @@
+= Script to build the video "Ethereum Hello World Tutorial"
+Paulo Jerônimo <paulojeronimo@gmail.com>, {localdate}
+:toc: left
+:icons: font
+:linkcss:
+:idprefix:
+:idseparator: -
+:nofooter:
+
+// URIs
+:uri-video: https://odysee.com/@paulojeronimo:4/ethereum-helloworld-tutorial:b
+:uri-tutorial: https://paulojeronimo.com/ethereum-helloworld-tutorial
+
+// Attributes
+:OBS: https://obsproject.com/[OBS Studio]
+:SamsungVoiceRecorder: https://play.google.com/store/apps/details?id=com.sec.android.app.voicenote&hl=en&gl=US[Samsung Voice Recorder]
+:Canva: https://www.canva.com/[Canva]
+:YouCut: https://play.google.com/store/apps/details?id=com.camerasideas.trimmer&hl=en&gl=US[YouCut]
+
+== What is this?
+
+This repository contains the script (link:build.sh[]) that I developed
+(in Bash) to build the video {uri-video}[Ethereum "Hello World"
+Tutorial] (related to {uri-tutorial}[this tutorial]):
+
+++++
+<iframe id="odysee-iframe" width="560" height="315" src="https://odysee.com/$/embed/ethereum-helloworld-tutorial/bd57db7f874b343fade1f0b8ea50693bdd194d9c?r=A7FXYbWgnjAVTboNF3MMBd3tRXnaQDv5" allowfullscreen></iframe>
+++++
+
+== Prerequisites (and some details)
+
+* Directory with media files (*not available in this repo*):
+** Inside the project, this directory can be a symbolic link to a
+directory containing <<directory-structure,all the necessary files>>.
+** It should contains:
+*** MKV files (`*.mkv`) recorded with {OBS} (with muted audio);
+*** M4A files (`*.m4a`) recorded with my cellphone through
+{SamsungVoiceRecorder} in a later time;
+**** The files produced by this software have only one audio channel
+(they are mono).
+So, to merge them with the videos, it needs to be converted to two
+channels (stereo) by the build script.
+*** MP4 files (`*.mp4`):
+**** The introductory video (`introduction.mp4`) was created with my
+cellphone's camera and edited on it using {YouCut};
+*** PNG files (`break*.png`) created with {Canva}:
+**** These files are convert to MP4 through the build.
+The generated MP4 have some silent time and it's used to separate some
+chapters in the main video.
+
+* Installed software (I use Ubuntu 22.04):
+** `ffmpeg` (package `ffmpeg`);
+** `mkvmerge` (package `mkvtoolnix`);
+
+== What this scripts does?
+
+The main goal of this script is *to generate the main video*!
+It uses all the media files, and the file `ordered-files.txt`, to do
+this.
+
+[[directory-structure]]
+These are all the media file that I produce BEFORE building the main
+video:
+
+----
+$ tree media
+media
+|-- canva
+|   |-- break1.png
+|   `-- break2.png
+|-- links.sh
+|-- obs
+|   |-- 1-2.mkv
+|   |-- 3.mkv
+|   |-- 4.1.11.mkv
+|   |-- 4.1.12.1.mkv
+|   |-- 4.1.12.2-4.1.12.3.mkv
+|   |-- 4.1.12.4.mkv
+|   |-- 4.1.1-4.1.4.mkv
+|   |-- 4.1.5.mkv
+|   |-- 4.1.6-4.1.8.mkv
+|   `-- 4.1.9-4.1.10.mkv
+|-- voice-recorder
+|   |-- 1-2.m4a
+|   |-- 3.m4a
+|   |-- 4.1.11.m4a
+|   |-- 4.1.12.1.m4a
+|   |-- 4.1.12.2-4.1.12.3.m4a
+|   |-- 4.1.12.4.m4a
+|   |-- 4.1.1-4.1.4.m4a
+|   |-- 4.1.5.m4a
+|   |-- 4.1.6-4.1.8.m4a
+|   `-- 4.1.9-4.1.10.m4a
+`-- youcut-pro
+    `-- introduction.mp4
+
+4 directories, 24 files
+----
+
+== How it is executed?
+
+----
+$ ./build.sh
+Generating build/break1.mp4 from media/break1.png ...
+Converting build/break1.mp4 to build/break1.mkv ...
+Generating build/break2.mp4 from media/break2.png ...
+Converting build/break2.mp4 to build/break2.mkv ...
+Converting media/introduction.mp4 to build/introduction.mkv ...
+Converting audio media/1-2.m4a to build/1-2.m4a ...
+Adding audio media/1-2.m4a to build/1-2.mkv ...
+Converting audio media/3.m4a to build/3.m4a ...
+Adding audio media/3.m4a to build/3.mkv ...
+Converting audio media/4.1.1-4.1.4.m4a to build/4.1.1-4.1.4.m4a ...
+Adding audio media/4.1.1-4.1.4.m4a to build/4.1.1-4.1.4.mkv ...
+Converting audio media/4.1.5.m4a to build/4.1.5.m4a ...
+Adding audio media/4.1.5.m4a to build/4.1.5.mkv ...
+Converting audio media/4.1.6-4.1.8.m4a to build/4.1.6-4.1.8.m4a ...
+Adding audio media/4.1.6-4.1.8.m4a to build/4.1.6-4.1.8.mkv ...
+Converting audio media/4.1.9-4.1.10.m4a to build/4.1.9-4.1.10.m4a ...
+Adding audio media/4.1.9-4.1.10.m4a to build/4.1.9-4.1.10.mkv ...
+Converting audio media/4.1.11.m4a to build/4.1.11.m4a ...
+Adding audio media/4.1.11.m4a to build/4.1.11.mkv ...
+Converting audio media/4.1.12.1.m4a to build/4.1.12.1.m4a ...
+Adding audio media/4.1.12.1.m4a to build/4.1.12.1.mkv ...
+Converting audio media/4.1.12.2-4.1.12.3.m4a to build/4.1.12.2-4.1.12.3.m4a ...
+Adding audio media/4.1.12.2-4.1.12.3.m4a to build/4.1.12.2-4.1.12.3.mkv ...
+Converting audio media/4.1.12.4.m4a to build/4.1.12.4.m4a ...
+Adding audio media/4.1.12.4.m4a to build/4.1.12.4.mkv ...
+
+Building build/ethereum-helloworld-tutorial-video.mkv ...
+----
