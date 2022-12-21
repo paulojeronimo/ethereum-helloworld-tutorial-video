@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="author" content="Paulo Jerônimo &lt;paulojeronimo@gmail.com&gt;, 2022-12-21">
+<title>Script to build the video "Ethereum Hello World Tutorial"</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Script to build the video "Ethereum Hello World Tutorial"</h1>
+<div class="details">
+<span id="author" class="author">Paulo Jerônimo &lt;paulojeronimo@gmail.com&gt;, 2022-12-21</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#what-is-this">What is this?</a></li>
+<li><a href="#prerequisites-and-some-details">Prerequisites (and some details)</a></li>
+<li><a href="#what-this-scripts-does">What this scripts does?</a></li>
+<li><a href="#how-it-is-executed">How it is executed?</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="what-is-this">What is this?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This repository contains the script (<a href="build.sh" class="bare">build.sh</a>) that I developed
+(in Bash) to build the video <a href="https://odysee.com/@paulojeronimo:4/ethereum-helloworld-tutorial:b">Ethereum "Hello World"
+Tutorial</a> (related to <a href="https://paulojeronimo.com/ethereum-helloworld-tutorial">this tutorial</a>):</p>
+</div>
+<iframe id="odysee-iframe" width="560" height="315" src="https://odysee.com/$/embed/ethereum-helloworld-tutorial/bd57db7f874b343fade1f0b8ea50693bdd194d9c?r=A7FXYbWgnjAVTboNF3MMBd3tRXnaQDv5" allowfullscreen></iframe>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites-and-some-details">Prerequisites (and some details)</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Directory with media files (<strong>not available in this repo</strong>):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Inside the project, this directory can be a symbolic link to a
+directory containing <a href="#directory-structure">all the necessary files</a>.</p>
+</li>
+<li>
+<p>It should contains:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>MKV files (<code>*.mkv</code>) recorded with <a href="https://obsproject.com/">OBS Studio</a> (with muted audio);</p>
+</li>
+<li>
+<p>M4A files (<code>*.m4a</code>) recorded with my cellphone through
+<a href="https://play.google.com/store/apps/details?id=com.sec.android.app.voicenote&amp;hl=en&amp;gl=US">Samsung Voice Recorder</a> in a later time;</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The files produced by this software have only one audio channel
+(they are mono).
+So, to merge them with the videos, it needs to be converted to two
+channels (stereo) by the build script.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>MP4 files (<code>*.mp4</code>):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The introductory video (<code>introduction.mp4</code>) was created with my
+cellphone&#8217;s camera and edited on it using <a href="https://play.google.com/store/apps/details?id=com.camerasideas.trimmer&amp;hl=en&amp;gl=US">YouCut</a>;</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>PNG files (<code>break*.png</code>) created with <a href="https://www.canva.com/">Canva</a>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>These files are convert to MP4 through the build.
+The generated MP4 have some silent time and it&#8217;s used to separate some
+chapters in the main video.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Installed software (I use Ubuntu 22.04):</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ffmpeg</code> (package <code>ffmpeg</code>);</p>
+</li>
+<li>
+<p><code>mkvmerge</code> (package <code>mkvtoolnix</code>);</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-this-scripts-does">What this scripts does?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The main goal of this script is <strong>to generate the main video</strong>!
+It uses all the media files, and the file <code>ordered-files.txt</code>, to do
+this.</p>
+</div>
+<div id="directory-structure" class="paragraph">
+<p>These are all the media file that I produce BEFORE building the main
+video:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ tree media
+media
+|-- canva
+|   |-- break1.png
+|   `-- break2.png
+|-- links.sh
+|-- obs
+|   |-- 1-2.mkv
+|   |-- 3.mkv
+|   |-- 4.1.11.mkv
+|   |-- 4.1.12.1.mkv
+|   |-- 4.1.12.2-4.1.12.3.mkv
+|   |-- 4.1.12.4.mkv
+|   |-- 4.1.1-4.1.4.mkv
+|   |-- 4.1.5.mkv
+|   |-- 4.1.6-4.1.8.mkv
+|   `-- 4.1.9-4.1.10.mkv
+|-- voice-recorder
+|   |-- 1-2.m4a
+|   |-- 3.m4a
+|   |-- 4.1.11.m4a
+|   |-- 4.1.12.1.m4a
+|   |-- 4.1.12.2-4.1.12.3.m4a
+|   |-- 4.1.12.4.m4a
+|   |-- 4.1.1-4.1.4.m4a
+|   |-- 4.1.5.m4a
+|   |-- 4.1.6-4.1.8.m4a
+|   `-- 4.1.9-4.1.10.m4a
+`-- youcut-pro
+    `-- introduction.mp4
+
+4 directories, 24 files</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="how-it-is-executed">How it is executed?</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>$ ./build.sh
+Generating build/break1.mp4 from media/break1.png ...
+Converting build/break1.mp4 to build/break1.mkv ...
+Generating build/break2.mp4 from media/break2.png ...
+Converting build/break2.mp4 to build/break2.mkv ...
+Converting media/introduction.mp4 to build/introduction.mkv ...
+Converting audio media/1-2.m4a to build/1-2.m4a ...
+Adding audio media/1-2.m4a to build/1-2.mkv ...
+Converting audio media/3.m4a to build/3.m4a ...
+Adding audio media/3.m4a to build/3.mkv ...
+Converting audio media/4.1.1-4.1.4.m4a to build/4.1.1-4.1.4.m4a ...
+Adding audio media/4.1.1-4.1.4.m4a to build/4.1.1-4.1.4.mkv ...
+Converting audio media/4.1.5.m4a to build/4.1.5.m4a ...
+Adding audio media/4.1.5.m4a to build/4.1.5.mkv ...
+Converting audio media/4.1.6-4.1.8.m4a to build/4.1.6-4.1.8.m4a ...
+Adding audio media/4.1.6-4.1.8.m4a to build/4.1.6-4.1.8.mkv ...
+Converting audio media/4.1.9-4.1.10.m4a to build/4.1.9-4.1.10.m4a ...
+Adding audio media/4.1.9-4.1.10.m4a to build/4.1.9-4.1.10.mkv ...
+Converting audio media/4.1.11.m4a to build/4.1.11.m4a ...
+Adding audio media/4.1.11.m4a to build/4.1.11.mkv ...
+Converting audio media/4.1.12.1.m4a to build/4.1.12.1.m4a ...
+Adding audio media/4.1.12.1.m4a to build/4.1.12.1.mkv ...
+Converting audio media/4.1.12.2-4.1.12.3.m4a to build/4.1.12.2-4.1.12.3.m4a ...
+Adding audio media/4.1.12.2-4.1.12.3.m4a to build/4.1.12.2-4.1.12.3.mkv ...
+Converting audio media/4.1.12.4.m4a to build/4.1.12.4.m4a ...
+Adding audio media/4.1.12.4.m4a to build/4.1.12.4.mkv ...
+
+Building build/ethereum-helloworld-tutorial-video.mkv ...</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
